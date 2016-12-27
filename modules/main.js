@@ -55,30 +55,31 @@ $(function() {
 
     $('#btnContinue').click(function(e) {
         
-        const inputSumm = $('#inputSumm').val(); //Начальная сумма кредита
+        const inputSumm = parseFloat($('#inputSumm').val()); //Начальная сумма кредита
         const inputPeriod = $('#inputPeriod').val(); //Полное время кредита
         const inputProcent = $('#inputProcent').val()/(12*100); //Процентная ставка по кредиту
+        const inputMonthSumm = parseFloat($('#inputMonthSumm').val()); //Выплата а текущий период
         
         $('#inputSumm').prop('disabled', true);
         $('#inputPeriod').prop('disabled', true);
         $('#inputProcent').prop('disabled', true);
         $('#btnContinue').text('Продолжить');
         
-        if (g_currentSummVTB == 0) g_currentSummVTB = parseFloat(inputSumm);
-        if (g_currentSummSBR == 0) g_currentSummSBR = parseFloat(inputSumm);
+        if (g_currentSummVTB == 0) g_currentSummVTB = inputSumm;
+        if (g_currentSummSBR == 0) g_currentSummSBR = inputSumm;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 //          Расчет для банка ВТБ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
         const kVTB = (inputProcent*Math.pow(1+inputProcent, inputPeriod)) / (Math.pow(1+inputProcent, inputPeriod) - 1);
         const aVTB = kVTB*inputSumm; //Ежемесячный аннуитетный платеж в банке ВТБ
-        const deltaVTB = $('#inputMonthSumm').val() - aVTB; //Сумма дополнительного досрочного погашения для ВТБ
+        const deltaVTB = inputMonthSumm - aVTB; //Сумма дополнительного досрочного погашения для ВТБ
 
         const fProcentVTB = g_currentSummVTB*inputProcent; //Начислено процентов за период в ВТБ
 
         const fCurrentSummVTB = g_currentSummVTB + fProcentVTB - aVTB - deltaVTB; //Остаток по кредиту в банке ВТБ
         
-        g_fullSummVTB += (fCurrentSummVTB < 0) ? (parseFloat($('#inputMonthSumm').val())+fCurrentSummVTB) : parseFloat($('#inputMonthSumm').val()); //Полная сумма погашений на данный момент в ВТБ
+        g_fullSummVTB += (fCurrentSummVTB < 0) ? (inputMonthSumm + fCurrentSummVTB) : inputMonthSumm; //Полная сумма погашений на данный момент в ВТБ
         
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
 
@@ -88,17 +89,17 @@ $(function() {
         const iPeriodSBR = inputPeriod-g_currentTime;
         const kSBR = (inputProcent*Math.pow(1+inputProcent, iPeriodSBR)) / (Math.pow(1+inputProcent, iPeriodSBR) - 1);
         const aSBR = kSBR*g_currentSummSBR; //Ежемесячный аннуитетный платеж в банке Сбербанк
-        const deltaSBR = $('#inputMonthSumm').val() - aSBR; //Сумма дополнительного досрочного погашения для Сбербанка
+        const deltaSBR = inputMonthSumm - aSBR; //Сумма дополнительного досрочного погашения для Сбербанка
         
         const fProcentSBR = g_currentSummSBR*inputProcent; //Начислено процентов за период в Сбербанке
         
         const fCurrentSummSBR = g_currentSummSBR + fProcentSBR - aSBR - deltaSBR; //Остаток по кредиту в банке Сбербанк
 
-        g_fullSummSBR += (fCurrentSummSBR < 0) ? (parseFloat($('#inputMonthSumm').val())+fCurrentSummSBR) : parseFloat($('#inputMonthSumm').val()); //Полная сумма погашений на данный момент в Сбербанке
+        g_fullSummSBR += (fCurrentSummSBR < 0) ? (inputMonthSumm + fCurrentSummSBR) : inputMonthSumm; //Полная сумма погашений на данный момент в Сбербанке
 
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
 
-        UpdateTables(aSBR, aVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB);
+        UpdateTables(inputMonthSumm-fProcentSBR-deltaSBR, inputMonthSumm-fProcentVTB-deltaVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB);
         
         if (fCurrentSummSBR < 0 || fCurrentSummVTB < 0)
             ShowResult();
@@ -106,12 +107,12 @@ $(function() {
     
 });
 
-function UpdateTables(aSBR, aVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB)
+function UpdateTables(bodySBR, bodyVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB)
 {
     g_currentTime++;
     
-    const rowSBR = '<tr id="sbr_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+aSBR.toFixed(2)+'</td><td>'+fProcentSBR.toFixed(2)+'</td><td>'+deltaSBR.toFixed(2)+'</td><td>'+fCurrentSummSBR.toFixed(2)+'</td></tr>';
-    const rowVTB = '<tr id="vtb_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+aVTB.toFixed(2)+'</td><td>'+fProcentVTB.toFixed(2)+'</td><td>'+deltaVTB.toFixed(2)+'</td><td>'+fCurrentSummVTB.toFixed(2)+'</td></tr>';
+    const rowSBR = '<tr id="sbr_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+bodySBR.toFixed(2)+'</td><td>'+fProcentSBR.toFixed(2)+'</td><td>'+deltaSBR.toFixed(2)+'</td><td>'+fCurrentSummSBR.toFixed(2)+'</td></tr>';
+    const rowVTB = '<tr id="vtb_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+bodyVTB.toFixed(2)+'</td><td>'+fProcentVTB.toFixed(2)+'</td><td>'+deltaVTB.toFixed(2)+'</td><td>'+fCurrentSummVTB.toFixed(2)+'</td></tr>';
         
     if (g_currentTime == 1)
     {
