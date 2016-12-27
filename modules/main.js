@@ -99,7 +99,7 @@ $(function() {
 
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
 
-        UpdateTables(inputMonthSumm-fProcentSBR-deltaSBR, inputMonthSumm-fProcentVTB-deltaVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB);
+        UpdateTables(inputMonthSumm, aSBR, aVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB);
         
         if (fCurrentSummSBR < 0 || fCurrentSummVTB < 0)
             ShowResult();
@@ -107,12 +107,15 @@ $(function() {
     
 });
 
-function UpdateTables(bodySBR, bodyVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB)
+function UpdateTables(inputMonthSumm, аSBR, аVTB, fProcentSBR, fProcentVTB, deltaSBR, deltaVTB, fCurrentSummSBR, fCurrentSummVTB)
 {
+    const bodySBR = inputMonthSumm-fProcentSBR-deltaSBR; //Основной долг в Сбербанке
+    const bodyVTB = inputMonthSumm-fProcentVTB-deltaVTB; //Основной долг в ВТБ
+
     g_currentTime++;
     
-    const rowSBR = '<tr id="sbr_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+bodySBR.toFixed(2)+'</td><td>'+fProcentSBR.toFixed(2)+'</td><td>'+deltaSBR.toFixed(2)+'</td><td>'+fCurrentSummSBR.toFixed(2)+'</td></tr>';
-    const rowVTB = '<tr id="vtb_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+bodyVTB.toFixed(2)+'</td><td>'+fProcentVTB.toFixed(2)+'</td><td>'+deltaVTB.toFixed(2)+'</td><td>'+fCurrentSummVTB.toFixed(2)+'</td></tr>';
+    const rowSBR = '<tr id="sbr_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+аSBR.toFixed(2)+'</td><td>'+bodySBR.toFixed(2)+'</td><td>'+fProcentSBR.toFixed(2)+'</td><td>'+deltaSBR.toFixed(2)+'</td><td>'+fCurrentSummSBR.toFixed(2)+'</td></tr>';
+    const rowVTB = '<tr id="vtb_'+g_currentTime+'"><td>'+g_currentTime+'</td><td>'+аVTB.toFixed(2)+'</td><td>'+bodyVTB.toFixed(2)+'</td><td>'+fProcentVTB.toFixed(2)+'</td><td>'+deltaVTB.toFixed(2)+'</td><td>'+fCurrentSummVTB.toFixed(2)+'</td></tr>';
         
     if (g_currentTime == 1)
     {
