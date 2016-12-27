@@ -50,8 +50,6 @@ var g_currentSummSBR = 0; //Текущий остаток по кредиту в
 var g_fullSummVTB = 0; //Полная сумма выплаченная по кредиту для ВТБ
 var g_fullSummSBR = 0; //Полная сумма выплаченная по кредиту для Сбербанка
 
-var g_bIsEnd = false;
-
 $(function() {
     InitDefaults();
 
